@@ -18,6 +18,19 @@ function stripTrailingNumber(text) {
   return text.replace(/\s*\d+$/, "").trim();
 }
 
+function removeOrphanCommas(text) {
+  let output = "";
+
+  for (let i = 0; i < text.length; i += 1) {
+    if (text[i] === "," && !/[A-Za-z0-9]/.test(text[i + 2] || "")) {
+      continue;
+    }
+    output += text[i];
+  }
+
+  return output;
+}
+
 function removePreviousWord(tokens) {
   for (let i = tokens.length - 1; i >= 0; i -= 1) {
     if (tokens[i] !== ",") {
@@ -50,6 +63,8 @@ function transformInput(text) {
   let output = replaced.join(" ");
   output = normalizeCommas(output);
   output = stripTrailingNumber(output);
+  output = normalizeCommas(output);
+  output = removeOrphanCommas(output);
   output = normalizeCommas(output);
   return output;
 }
