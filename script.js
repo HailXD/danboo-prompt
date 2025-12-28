@@ -18,23 +18,34 @@ function stripTrailingNumber(text) {
   return text.replace(/\s*\d+$/, "").trim();
 }
 
+function removePreviousWord(tokens) {
+  for (let i = tokens.length - 1; i >= 0; i -= 1) {
+    if (tokens[i] !== ",") {
+      tokens.splice(i, 1);
+      return;
+    }
+  }
+}
+
 function transformInput(text) {
   const tokens = text.split(/\s+/).filter(Boolean);
-  const replaced = tokens
-    .map((token) => {
-      const lowerToken = token.toLowerCase();
-      if (blacklist.some((word) => lowerToken.includes(word))) {
-        return null;
-      }
-      if (token === "?") {
-        return null;
-      }
-      if (token.includes("?")) {
-        return ",";
-      }
-      return token;
-    })
-    .filter((token) => token !== null);
+  const replaced = [];
+
+  tokens.forEach((token) => {
+    const lowerToken = token.toLowerCase();
+    if (blacklist.some((word) => lowerToken.includes(word))) {
+      removePreviousWord(replaced);
+      return;
+    }
+    if (token === "?") {
+      return;
+    }
+    if (token.includes("?")) {
+      replaced.push(",");
+      return;
+    }
+    replaced.push(token);
+  });
 
   let output = replaced.join(" ");
   output = normalizeCommas(output);
