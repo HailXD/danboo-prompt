@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Input to Output</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f3ee;
+        --ink: #1b1b1b;
+        --accent: #2f5e4e;
+        --panel: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.08);
+        --border: #cfc7bb;
+        --mono: "IBM Plex Mono", "Consolas", "Menlo", monospace;
+        --serif: "Fraunces", "Georgia", serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--serif);
+        color: var(--ink);
+        background: radial-gradient(circle at top, #fff7ea 0%, var(--bg) 45%, #efe6da 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 20px;
+      }
+
+      main {
+        width: min(920px, 100%);
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: 0 20px 40px var(--shadow);
+        padding: 32px;
+        display: grid;
+        gap: 24px;
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 0;
+        max-width: 70ch;
+        line-height: 1.5;
+      }
+
+      .panel {
+        display: grid;
+        gap: 12px;
+      }
+
+      label {
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 120px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 1rem;
+        font-family: var(--mono);
+        resize: vertical;
+        background: #fffdf9;
+      }
+
+      .output {
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        min-height: 80px;
+        font-family: var(--mono);
+        background: #fbfaf7;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .hint {
+        font-size: 0.95rem;
+        color: #4d4d4d;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-family: var(--mono);
+        background: #e4efe9;
+        color: var(--accent);
+      }
+
+      @media (max-width: 720px) {
+        main {
+          padding: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <span class="tag">live transform</span>
+        <h1>Input to Output</h1>
+        <p class="hint">
+          Words equal to <code>?</code> are removed. Words containing <code>?</code> are replaced with a comma.
+          Commas are formatted with no space before and one space after.
+        </p>
+      </header>
+
+      <section class="panel">
+        <label for="source">Input</label>
+        <textarea id="source" placeholder="Type or paste text here..."></textarea>
+      </section>
+
+      <section class="panel">
+        <label for="result">Output</label>
+        <div id="result" class="output" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script>
+      const source = document.getElementById("source");
+      const result = document.getElementById("result");
+
+      function transformInput(text) {
+        const tokens = text.split(/\s+/).filter(Boolean);
+        const replaced = tokens
+          .map((token) => {
+            if (token === "?") {
+              return null;
+            }
+            if (token.includes("?")) {
+              return ",";
+            }
+            return token;
+          })
+          .filter((token) => token !== null);
+
+        let output = replaced.join(" ");
+        output = output.replace(/\s+,/g, ",");
+        output = output.replace(/,\s*/g, ", ");
+        output = output.trim();
+        output = output.replace(/,\s*$/g, ",");
+        return output;
+      }
+
+      function updateOutput() {
+        result.textContent = transformInput(source.value);
+      }
+
+      source.addEventListener("input", updateOutput);
+      updateOutput();
+    </script>
+  </body>
+</html>
