@@ -1,6 +1,6 @@
 const source = document.getElementById("source");
 const result = document.getElementById("result");
-const blacklist = ["eyes", "hair"];
+const blacklist = ["censor", "eyes", "hair"];
 
 function normalizeCommas(text) {
   let output = text.replace(/\s+,/g, ",");
