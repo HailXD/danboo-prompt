@@ -1,5 +1,6 @@
 const source = document.getElementById("source");
 const result = document.getElementById("result");
+const blacklist = ["eyes", "hair"];
 
 function normalizeCommas(text) {
   let output = text.replace(/\s+,/g, ",");
@@ -21,6 +22,10 @@ function transformInput(text) {
   const tokens = text.split(/\s+/).filter(Boolean);
   const replaced = tokens
     .map((token) => {
+      const lowerToken = token.toLowerCase();
+      if (blacklist.some((word) => lowerToken.includes(word))) {
+        return null;
+      }
       if (token === "?") {
         return null;
       }
